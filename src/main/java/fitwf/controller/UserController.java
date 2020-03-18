@@ -13,14 +13,13 @@ public class UserController {
 
 /*  
 User capabilities:
-    login
-    register
-    changePassword as owner
-    addWatchFace
-    deleteWatchFace as owner
-    setLike
-    removeLike
-    addToFavorites
-    removeFromFavorites
+    login();
+    register(RegisterData rd);
+    changePassword(String oldPassword, String newPassword);
+    //regainPassword();
+    getWFs(int lastID); //returns 50 wfs
+    getLikedWFs(int lastID); //returns 50 wfs
+    getFavoritedWFs(int lastID); //50 WFs
+    
 */
 }
