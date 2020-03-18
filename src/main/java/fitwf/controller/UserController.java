@@ -11,14 +11,16 @@ public class UserController {
     @Autowired
     public UserService userService;
 
-/*  User capabilities:
-
+/*  
+User capabilities:
+    login
     register
-    publicWatchFace
-    deleteWatchFace as owner
     changePassword as owner
+    addWatchFace
+    deleteWatchFace as owner
     setLike
     removeLike
     addToFavorites
-    removeFromFavorites*/
+    removeFromFavorites
+*/
 }
