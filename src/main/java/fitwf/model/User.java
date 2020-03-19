@@ -2,13 +2,12 @@ package fitwf.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -18,27 +17,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ValidUsername
+    //    @ValidUsername
     @Column(name = "username")
     private String username;
 
-    @Max(300)
     @Email
     @Column(name = "email")
     private String email;
 
-    @ValidPassword
+    //    @ValidPassword
     @Column(name = "password")
-    private String password;
+    private String password ="test";
 
-    @NotNull
-    @Column(name = "status")
-    private short status;
+    @Column(name = "enable")
+    private boolean enable = true;
 
-    @NotNull
-    @Max(5)
-    @Column(name = "role")
-    private String role;
+    @Column(name = "admin_role")
+    private boolean adminRole = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<WatchFace> watchFace;

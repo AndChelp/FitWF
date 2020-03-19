@@ -1,5 +1,9 @@
 package fitwf.service;
 
+import fitwf.dto.RegisterDTO;
+import fitwf.exception.EmailAlreadyExists;
+import fitwf.exception.UsernameAlreadyExists;
+import fitwf.exception.UsernameAndEmailAlreadyExists;
 import fitwf.model.User;
 import fitwf.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +24,22 @@ public class UserService {
     public User getUserByID(int id) {
         return userRepository.findById(id).orElse(null);
     }
-    
+
     public void registerNewUser(RegisterDTO registerDto) {
         String username = registerDto.getUsername();
         String email = registerDto.getEmail();
-        boolean usernameExists = userRepository.isUsernameExist(username);
-        boolean emailExists = userRepository.isEmailExist(email);
-        if(usernameExists && emailExists) 
-            throw new UsernameAndEmailAlreadyExists("Username "+username+" and email "+email+" already exist!");
+        boolean usernameExists = userRepository.existsByUsername(username);
+        boolean emailExists = userRepository.existsByEmail(email);
+        if (usernameExists && emailExists)
+            throw new UsernameAndEmailAlreadyExists("Username " + username + " and email " + email + " already exist!");
         else if (usernameExists)
-            throw new UsernameAlreadyExists();
+            throw new UsernameAlreadyExists("Username " + username + " already exists!");
         else if (emailExists)
-            throw new EmailAlreadyExists();
+            throw new EmailAlreadyExists("Email " + email + " already exists!");
         User user = new User();
         user.setUsername(registerDto.getUsername());
         user.setEmail(registerDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setIsAdmin(false);
+        user.setPassword(registerDto.getPassword());
         userRepository.save(user);
     }
 }

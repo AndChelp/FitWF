@@ -1,13 +1,21 @@
+package fitwf.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+
 @Getter
 @Setter
 public class RegisterDTO{
-    @ValidUsername
+    //@ValidUsername
     private String username;
-    
-    @Max(300)
+
+
     @Email
     private String email;
     
-    @ValidPassword
+    //@ValidPassword
     private String password;
 }

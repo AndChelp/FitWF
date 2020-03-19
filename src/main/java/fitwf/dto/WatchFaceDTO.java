@@ -1,7 +1,8 @@
 package fitwf.dto;
 
 import fitwf.model.WatchFace;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

@@ -1,12 +1,15 @@
 package fitwf.controller;
 
+import fitwf.dto.RegisterDTO;
 import fitwf.dto.WatchFaceDTO;
+import fitwf.response.Response;
+import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/public")
@@ -16,24 +19,27 @@ public class PublicController {
     @Autowired
     private UserService userService;
 
-    @GetMaping("/register")
-    public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDto){
+    @GetMapping("/register")
+    public ResponseEntity<Response> register(@RequestBody @Valid RegisterDTO registerDto) {
         userService.registerNewUser(registerDto);
-        return ResponseEntity.ok(new ...);
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("User successfully registered!")
+                .build());
     }
 
     @GetMapping("/watchface")
-    public ResponseEntity getWFbyID(@RequestParam int id) {
-        return new WatchFaceDTO(watchFaceService.getWatchFaceByID(id));
+    public ResponseEntity<Response> getWFbyID(@RequestParam int id) {
+        WatchFaceDTO watchFaceDTO = new WatchFaceDTO(watchFaceService.getWatchFaceByID(id));
+        return ResponseEntity.ok(Response.builder().statusMsg("WatchFace found").watchFace(watchFaceDTO).build());
     }
-    
+    /*
     @GetMapping("/watchface")
     public ResponseEntity getFiftyWFs(@RequestParam int fromId) {
         List<WatchFaceDTO> watchFaceDtoList = watchFaceService.getFiftyWatchFaces(fromId);
         return null;
     }
-    
-   // @GetMapping("/watchface")
+    */
+    // @GetMapping("/watchface")
 /*
 /api/public/
 +register(RegisterData rd);

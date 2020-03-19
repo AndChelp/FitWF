@@ -28,12 +28,10 @@ public class WatchFace {
     private Set<User> userFavorites;
 
     @NotNull
-    @Max(50)
     @Column(name = "preview_uri")
     private String preview_uri;
 
     @NotNull
-    @Max(50)
     @Column(name = "file_uri")
     private String file_uri;
 
@@ -42,7 +40,6 @@ public class WatchFace {
     private int downloads;
 
     @NotNull
-    @Max(200)
     @Column(name = "features")
     private String features;
 }
