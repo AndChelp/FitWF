@@ -32,7 +32,12 @@ public class UserService {
             throw new UsernameAlreadyExists();
         else if (emailExists)
             throw new EmailAlreadyExists();
-        userRepository.save(new User(registerDto));
+        User user = new User();
+        user.setUsername(registerDto.getUsername());
+        user.setEmail(registerDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setIsAdmin(false);
+        userRepository.save(user);
     }
 }
 
