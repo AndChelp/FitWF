@@ -1,0 +1,48 @@
+clock:
+    digital
+    analog
+    seconds
+    am/pm
+    date
+    day of week
+activity:
+    distance
+    step progress
+    step count
+    steps goal
+    calories
+    pulse
+weather:
+    icon
+    current temperature
+    daily temperature
+    air pollution
+status:
+    bluetooth
+    alarm
+    lock
+    don't disturbed
+battery:
+    percent
+    progress scale
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -11,15 +11,14 @@ public class UserController {
     @Autowired
     public UserService userService;
 
-/*  
-User capabilities:
-    login();
-    register(RegisterData rd);
-    changePassword(String oldPassword, String newPassword);
-    //regainPassword();
-    getWFs(int lastID); //returns 50 wfs
-    getLikedWFs(int lastID); //returns 50 wfs
-    getFavoritedWFs(int lastID); //50 WFs
-    
-*/
+/*  User capabilities:
+
+    register
+    publicWatchFace
+    deleteWatchFace as owner
+    changePassword as owner
+    setLike
+    removeLike
+    addToFavorites
+    removeFromFavorites*/
 }

@@ -1,12 +1,15 @@
 package fitwf.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "watchface")
 public class WatchFace {
@@ -14,9 +17,15 @@ public class WatchFace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_user")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)
     private User user;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")
+    private Set<User> userLikes;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteWatchFaces")
+    private Set<User> userFavorites;
 
     @NotNull
     @Max(50)
@@ -31,10 +40,6 @@ public class WatchFace {
     @NotNull
     @Column(name = "downloads")
     private int downloads;
-
-    @NotNull
-    @Column(name = "likes")
-    private int likes;
 
     @NotNull
     @Max(200)

@@ -1,0 +1,25 @@
+
+/api/admin/
+blockUser(int userID);
+unblockUser(int userID);
+deleteAllUserWF(int userID);
+deleteAllUserLikes(int userID);
+
+/api/user/
+changePassword(String oldPassword, String newPassword);
+getLikedWFs(int lastID); //returns 50 wfs
+getFavoriteWFs(int lastID); //50 WFs
+addWF(WF wf);
+deleteWF(int wfID);
+setLike(int wfID);
+deleteLike(int wfID);
+addToFavorites(int wfID);
+deleteFromFavorites(int wfID);
+
+/api/public/
+register(RegisterData rd);
+login();
+recoverPassword();
+getWFs(int lastID); //returns 50 wfs
+getWFsByFilter(Filter filter);
+getWFById(int wfID);

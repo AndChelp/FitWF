@@ -1,16 +1,18 @@
 package fitwf.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
-@Data
+import java.util.Set;
+@Getter
+@Setter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +47,18 @@ public class User {
     @Column(name = "role")
     private String role;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<WatchFace> watchFace;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private WatchFace watchFace;
+    @ManyToMany
+    @JoinTable(name = "liked_wf",
+            joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_wf", referencedColumnName = "id"))
+    private Set<WatchFace> likedWatchFaces;
+
+    @ManyToMany
+    @JoinTable(name = "favorite_wf",
+            joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_wf", referencedColumnName = "id"))
+    private Set<WatchFace> favoriteWatchFaces;
 }
