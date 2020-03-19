@@ -3,7 +3,8 @@ package fitwf.dto;
 import fitwf.model.WatchFace;
 import lombok.Data;
 
-@Data
+@Getter
+@Setter
 public class WatchFaceDTO {
     private int id;
 

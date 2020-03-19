@@ -14,6 +14,12 @@ public class PublicController {
     @Autowired
     private WatchFaceService watchFaceService;
 
+    @GetMaping("/register")
+    public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDto){
+        userService.registerNewUser(registerDto);
+        return ResponseEntity.ok(new ...);
+    }
+
     @GetMapping("/watchface")
     public WatchFaceDTO findWFbyID(@RequestParam int id) {
         return new WatchFaceDTO(watchFaceService.findWatchFaceByID(id));
