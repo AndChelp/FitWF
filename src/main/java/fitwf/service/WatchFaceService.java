@@ -21,4 +21,8 @@ public class WatchFaceService {
     public void deleteByID(int id) {
         watchFaceRepository.deleteById(id);
     }
+
+    public WatchFace findWatchFaceByID(int id) {
+        return watchFaceRepository.findById(id).orElse(null);
+    }
 }

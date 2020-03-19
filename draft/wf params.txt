@@ -1,0 +1,92 @@
+digital clock:
+    hours
+    minutes
+    seconds
+    am/pm
+activity:
+    steps
+    goal
+    calories
+    pulse
+    distance:
+        distance value
+        suffix
+        delimiter
+date:
+    month and day:
+        two digits day
+        two digits month
+        separated:
+            day
+            month
+        inline
+            value
+            delimiter
+    day of week
+weather:
+    icon:
+        default pack
+        custom pack
+    temperature:
+        current:
+            value
+            minus icon
+            degree icon
+        daily:
+            separated:
+                day:
+                    value
+                    minus icon
+                    degree icon
+                night:
+                    value
+                    minus icon
+                    degree icon
+                dayAlt
+                nightAlt
+            inline:
+                value
+                minus icon
+                delimiter
+                append degrees for both
+                degree icon
+    air pollution:
+        index
+        icons
+step progress:
+    goal image
+    as scale
+    as circle
+status:
+    bluetooth
+    alarm
+    lock
+    don't disturbed
+battery:
+    icon
+    percent
+    progress scale
+analog clock:
+    hours
+    minutes
+    seconds
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
