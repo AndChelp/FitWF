@@ -18,23 +18,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
-    @Min(3)
-    @Max(30)
-//    @ValidUsername
+    @ValidUsername
     @Column(name = "username")
     private String username;
 
-    @NotNull
     @Max(300)
     @Email
     @Column(name = "email")
     private String email;
 
-    @NotNull
-    @Min(6)
-    @Max(60)
-//    @ValidPassword
+    @ValidPassword
     @Column(name = "password")
     private String password;
 
