@@ -22,7 +22,11 @@ public class WatchFaceService {
         watchFaceRepository.deleteById(id);
     }
 
-    public WatchFace findWatchFaceByID(int id) {
+    public WatchFace getWatchFaceByID(int id) {
         return watchFaceRepository.findById(id).orElse(null);
+    }
+    
+    public List<WatchFace> getFiftyWatchFaces(int fromId){
+        return null;
     }
 }

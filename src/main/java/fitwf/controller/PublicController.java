@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicController {
     @Autowired
     private WatchFaceService watchFaceService;
+    @Autowired
+    private UserService userService;
 
     @GetMaping("/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDto){
@@ -21,17 +23,24 @@ public class PublicController {
     }
 
     @GetMapping("/watchface")
-    public WatchFaceDTO findWFbyID(@RequestParam int id) {
-        return new WatchFaceDTO(watchFaceService.findWatchFaceByID(id));
+    public ResponseEntity getWFbyID(@RequestParam int id) {
+        return new WatchFaceDTO(watchFaceService.getWatchFaceByID(id));
     }
+    
+    @GetMapping("/watchface")
+    public ResponseEntity getFiftyWFs(@RequestParam int fromId) {
+        List<WatchFaceDTO> watchFaceDtoList = watchFaceService.getFiftyWatchFaces(fromId);
+        return null;
+    }
+    
    // @GetMapping("/watchface")
 /*
 /api/public/
-register(RegisterData rd);
++register(RegisterData rd);
 login();
-recoverPassword();
-getWFs(int lastID); //returns 50 wfs
-getWFsByFilter(Filter filter);
+? recoverPassword();
++ getWFs(int lastID); //returns 50 wfs
+? getWFsByFilter(Filter filter);
 + getWFById(int wfID);
 */
 }
