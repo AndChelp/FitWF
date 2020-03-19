@@ -1,4 +1,4 @@
-clock:
+time:
     digital
     analog
     seconds
