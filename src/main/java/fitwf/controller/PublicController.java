@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/public")
@@ -29,16 +30,19 @@ public class PublicController {
 
     @GetMapping("/watchface")
     public ResponseEntity<Response> getWFbyID(@RequestParam int id) {
-        WatchFaceDTO watchFaceDTO = new WatchFaceDTO(watchFaceService.getWatchFaceByID(id));
+        WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(id);
         return ResponseEntity.ok(Response.builder().statusMsg("WatchFace found").watchFace(watchFaceDTO).build());
     }
-    /*
-    @GetMapping("/watchface")
-    public ResponseEntity getFiftyWFs(@RequestParam int fromId) {
+
+    @GetMapping("/watchfaces")
+    public ResponseEntity<Response> getFiftyWFs(@RequestParam int fromId) {
         List<WatchFaceDTO> watchFaceDtoList = watchFaceService.getFiftyWatchFaces(fromId);
-        return null;
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("Found " + watchFaceDtoList.size() + " WatchFaces")
+                .itemCount(watchFaceDtoList.size())
+                .watchFaceList(watchFaceDtoList)
+                .build());
     }
-    */
     // @GetMapping("/watchface")
 /*
 /api/public/
