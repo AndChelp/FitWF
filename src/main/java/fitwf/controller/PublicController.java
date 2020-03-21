@@ -1,12 +1,19 @@
 package fitwf.controller;
 
+import fitwf.dto.LoginDTO;
 import fitwf.dto.RegisterDTO;
 import fitwf.dto.WatchFaceDTO;
+import fitwf.response.JwtResponse;
 import fitwf.response.Response;
+import fitwf.security.jwt.JwtProvider;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,13 +23,33 @@ import java.util.List;
 @RequestMapping("/api/public")
 public class PublicController {
     @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtProvider jwtProvider;
+    @Autowired
     private WatchFaceService watchFaceService;
     @Autowired
     private UserService userService;
 
-    @GetMapping("/register")
-    public ResponseEntity<Response> register(@RequestBody @Valid RegisterDTO registerDto) {
-        userService.registerNewUser(registerDto);
+    @PostMapping("/login")
+    public ResponseEntity<Response> authenticateUser(@RequestBody @Valid LoginDTO loginDTO) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getUsername(),
+                        loginDTO.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtProvider.generateJwtToken(authentication);
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("Authentication completed!")
+                .jwtResponse(new JwtResponse(jwt)).build());
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Response> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
+        //TODO: convert registerDTO to user right here (for purpose of validation)
+        userService.registerNewUser(registerDTO);
         return ResponseEntity.ok(Response.builder()
                 .statusMsg("User successfully registered!")
                 .build());

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
@@ -21,12 +20,6 @@ public class WatchFace {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")
-    private Set<User> userLikes;
-
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteWatchFaces")
-    private Set<User> userFavorites;
-
     @NotNull
     @Column(name = "preview_uri")
     private String preview_uri;
@@ -42,4 +35,11 @@ public class WatchFace {
     @NotNull
     @Column(name = "features")
     private String features;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")
+    private Set<User> userLikes;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteWatchFaces")
+    private Set<User> userFavorites;
+
 }

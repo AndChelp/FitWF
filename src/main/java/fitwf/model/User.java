@@ -2,7 +2,6 @@ package fitwf.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -27,24 +26,27 @@ public class User {
 
     //    @ValidPassword
     @Column(name = "password")
-    private String password ="test";
+    private String password;
 
     @Column(name = "enable")
     private boolean enable = true;
 
-    @Column(name = "admin_role")
-    private boolean adminRole = false;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<WatchFace> watchFace;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"))
+    private Set<Role> roles;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "liked_wf",
             joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "id_wf", referencedColumnName = "id"))
     private Set<WatchFace> likedWatchFaces;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "favorite_wf",
             joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "id_wf", referencedColumnName = "id"))
