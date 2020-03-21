@@ -3,7 +3,6 @@ package fitwf.controller;
 import fitwf.dto.LoginDTO;
 import fitwf.dto.RegisterDTO;
 import fitwf.dto.WatchFaceDTO;
-import fitwf.response.JwtResponse;
 import fitwf.response.Response;
 import fitwf.security.jwt.JwtProvider;
 import fitwf.service.UserService;
@@ -43,15 +42,24 @@ public class PublicController {
         String jwt = jwtProvider.generateJwtToken(authentication);
         return ResponseEntity.ok(Response.builder()
                 .statusMsg("Authentication completed!")
-                .jwtResponse(new JwtResponse(jwt)).build());
+                .jwtToken(jwt).build());
     }
 
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
         //TODO: convert registerDTO to user right here (for purpose of validation)
         userService.registerNewUser(registerDTO);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        registerDTO.getUsername(),
+                        registerDTO.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtProvider.generateJwtToken(authentication);
         return ResponseEntity.ok(Response.builder()
                 .statusMsg("User successfully registered!")
+                .jwtToken(jwt)
                 .build());
     }
 

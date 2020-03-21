@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "watchface")
+@Table(name = "watchfaces")
 public class WatchFace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

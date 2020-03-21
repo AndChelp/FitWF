@@ -22,5 +22,5 @@ public class Response {
     private UserDTO user;
     private List<WatchFaceDTO> watchFaceList;
     private WatchFaceDTO watchFace;
-    private JwtResponse jwtResponse;
+    private String jwtToken;
 }

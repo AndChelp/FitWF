@@ -35,6 +35,7 @@ public class WatchFaceService {
     }
 
     public List<WatchFaceDTO> getFiftyWatchFaces(int fromId) {
+        System.out.println("getFiftyWatchFaces");
         List<WatchFace> watchFaceList = watchFaceRepository.getFirst3ByIdGreaterThanEqual(fromId);
         if (watchFaceList.isEmpty())
             throw new WatchFaceNotFoundException("WatchFaces with id=" + fromId + " or higher not found!");

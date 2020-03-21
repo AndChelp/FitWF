@@ -13,14 +13,16 @@ public class JwtProvider {
     private String jwtSecret;
 
     public String generateJwtToken(Authentication authentication) {
+        System.out.println("generateJwtToken");
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
-        return Jwts.builder()
+        return "Bearer_" + Jwts.builder()
                 .setSubject(userPrinciple.getUsername())
-                .signWith(SignatureAlgorithm.ES512, jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
     public String getUsernameFromJwtToken(String token) {
+        System.out.println("getUsernameFromJwtToken");
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
@@ -28,6 +30,7 @@ public class JwtProvider {
     }
 
     public boolean validateJwtToken(String authToken) {
+        System.out.println("validateJwtToken");
         Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
         return true;
     }
