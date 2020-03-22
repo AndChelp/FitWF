@@ -1,6 +1,7 @@
 package fitwf.controller;
 
-import fitwf.model.UserPrinciple;
+import fitwf.entity.User;
+import fitwf.entity.WatchFace;
 import fitwf.response.Response;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
@@ -25,7 +26,7 @@ public class UserController {
     public ResponseEntity<Response> changePassword(@RequestParam String oldPassword, @RequestParam String newPassword) {
         userService.changePassword(oldPassword, newPassword);
         return ResponseEntity.ok(Response.builder()
-                .statusMsg(((UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPassword())
+                .statusMsg("Password successfully changed")
                 .build());
     }
 
@@ -49,6 +50,12 @@ public class UserController {
     сохранить циферблат в бд(юзер, preview_uri, file_uri, описание)
     вернуть ОК
 */
+        WatchFace watchFace = new WatchFace();
+        watchFace.setFeatures("awesome features");
+        watchFace.setFile_uri("file");
+        watchFace.setPreview_uri("preview");
+        watchFace.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        watchFaceService.addNewWF(watchFace);
         return ResponseEntity.ok(Response.builder().build());
     }
 }

@@ -1,6 +1,6 @@
 package fitwf.dto;
 
-import fitwf.model.WatchFace;
+import fitwf.entity.WatchFace;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +18,7 @@ public class WatchFaceDTO {
     private int downloads;
 
     private int likes;
-    
+
     private String features;
 
 

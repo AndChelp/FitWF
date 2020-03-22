@@ -1,4 +1,4 @@
-package fitwf.model;
+package fitwf.entity;
 
 import fitwf.security.RoleName;
 import lombok.Getter;

@@ -56,12 +56,15 @@ public class PublicController {
     @GetMapping("/watchfaces/{id}")
     public ResponseEntity<Response> getWFbyID(@PathVariable int id) {
         WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(id);
-        return ResponseEntity.ok(Response.builder().statusMsg("WatchFace found").watchFace(watchFaceDTO).build());
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("WatchFace found")
+                .watchFace(watchFaceDTO)
+                .build());
     }
 
     @GetMapping("/watchfaces")
-    public ResponseEntity<Response> getFiftyWFs(@RequestParam int fromId) {
-        List<WatchFaceDTO> watchFaceDtoList = watchFaceService.getFiftyWatchFaces(fromId);
+    public ResponseEntity<Response> getFiftyWFs(@RequestParam int offsetId) {
+        List<WatchFaceDTO> watchFaceDtoList = watchFaceService.getFiftyWatchFaces(offsetId);
         return ResponseEntity.ok(Response.builder()
                 .statusMsg("Found " + watchFaceDtoList.size() + " WatchFaces")
                 .itemCount(watchFaceDtoList.size())
@@ -79,7 +82,6 @@ public class PublicController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return jwtProvider.generateJwtToken(authentication);
     }
-    // @GetMapping("/watchface")
 /*
 /api/public/
 +register(RegisterData rd);

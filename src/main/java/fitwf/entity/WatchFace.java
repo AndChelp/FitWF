@@ -1,4 +1,4 @@
-package fitwf.model;
+package fitwf.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +35,10 @@ public class WatchFace {
     @NotNull
     @Column(name = "features", updatable = false)
     private String features;
+
+    @NotNull
+    @Column(name = "enable", updatable = false)
+    private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")
     private Set<User> userLikes;

@@ -1,6 +1,6 @@
 package fitwf.controller;
 
-import fitwf.model.UserPrinciple;
+import fitwf.entity.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ public class AdminController {
     */
     @GetMapping("/test")
     public String test() {
-        System.out.println(((UserPrinciple) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
+        System.out.println(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
         return "test";
     }
 }

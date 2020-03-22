@@ -32,19 +32,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        System.out.println("authenticationManagerBean");
         return super.authenticationManagerBean();
     }
 
     @Bean
     public JwtAuthTokenFilter authTokenFilter() {
-        System.out.println("authTokenFilter");
         return new JwtAuthTokenFilter();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        System.out.println("configure");
         auth
                 .userDetailsService(userService)
                 .passwordEncoder(passwordEncoder());
@@ -52,7 +49,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("configure-http");
         http
                 .httpBasic().disable()
                 .csrf().disable()

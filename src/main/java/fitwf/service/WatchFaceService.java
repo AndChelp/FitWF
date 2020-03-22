@@ -1,14 +1,14 @@
 package fitwf.service;
 
 import fitwf.dto.WatchFaceDTO;
+import fitwf.entity.WatchFace;
 import fitwf.exception.WatchFaceNotFoundException;
-import fitwf.model.WatchFace;
 import fitwf.repository.WatchFaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WatchFaceService {
@@ -34,17 +34,16 @@ public class WatchFaceService {
         return new WatchFaceDTO(watchFace);
     }
 
-    public List<WatchFaceDTO> getFiftyWatchFaces(int fromId) {
-        System.out.println("getFiftyWatchFaces");
-        List<WatchFace> watchFaceList = watchFaceRepository.getFirst3ByIdGreaterThanEqual(fromId);
-        if (watchFaceList.isEmpty())
-            throw new WatchFaceNotFoundException("WatchFaces with id=" + fromId + " or higher not found!");
-        //ToDO: Если циферблаты есть, но не попадают в диапазон ID - ?
-        List<WatchFaceDTO> watchFaceDTOList = new ArrayList<>();
-        for (WatchFace watchFace : watchFaceList) {
-            watchFaceDTOList.add(new WatchFaceDTO(watchFace));
-        }
-        return watchFaceDTOList;
+    public List<WatchFaceDTO> getFiftyWatchFaces(int offsetId) {
+        int lastId = watchFaceRepository.getLastId();
+        if (lastId == offsetId)
+            throw new WatchFaceNotFoundException("There no more WatchFaces");
+
+        return watchFaceRepository
+                .getFirst3ByIdLessThanEqualAndEnabledTrueOrderByIdDesc(lastId - offsetId)
+                .stream()
+                .map(WatchFaceDTO::new)
+                .collect(Collectors.toList());
     }
 }
 

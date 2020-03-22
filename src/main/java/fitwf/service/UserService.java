@@ -1,9 +1,8 @@
 package fitwf.service;
 
 import fitwf.dto.RegisterDTO;
+import fitwf.entity.User;
 import fitwf.exception.*;
-import fitwf.model.User;
-import fitwf.model.UserPrinciple;
 import fitwf.repository.RoleRepository;
 import fitwf.repository.UserRepository;
 import fitwf.security.RoleName;
@@ -29,24 +28,15 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
     }
-/*
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User with username=" + username + " not found!"));
-    }*/
 
     public void changePassword(String oldPassword, String newPassword) {
-        UserPrinciple userPrinciple = (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String currentPassword = userPrinciple.getPassword();
-        System.out.println(currentPassword);
-        System.out.println(passwordEncoder.encode(oldPassword));
-        System.out.println(oldPassword);
-        if (!currentPassword.equals(passwordEncoder.encode(oldPassword)))
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentPassword = user.getPassword();
+        if (!passwordEncoder.matches(oldPassword, currentPassword))
             throw new InvalidPasswordException("Old password is invalid");
         if (oldPassword.equals(newPassword))
             throw new OldAndNewPasswordEqualException("Old and new passwords cannot be the same");
-//        userRepository.updatePassword(userPrinciple.getId(), newPassword);
+        userRepository.updatePassword(user.getId(), passwordEncoder.encode(newPassword));
     }
 
     public void registerNewUser(RegisterDTO registerDto) {
@@ -70,11 +60,9 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return UserPrinciple.create(
-                userRepository.findByUsername(username)
-                        .orElseThrow(() ->
-                                new UsernameNotFoundException("Username=" + username + " not found"))
-        );
+        return userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Username=" + username + " not found"));
     }
 }
 
