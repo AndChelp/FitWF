@@ -21,27 +21,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/public")
 public class PublicController {
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
+    private final WatchFaceService watchFaceService;
+    private final UserService userService;
+
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtProvider jwtProvider;
-    @Autowired
-    private WatchFaceService watchFaceService;
-    @Autowired
-    private UserService userService;
+    public PublicController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, WatchFaceService watchFaceService, UserService userService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
+        this.watchFaceService = watchFaceService;
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Response> authenticateUser(@RequestBody @Valid LoginDTO loginDTO) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getUsername(),
-                        loginDTO.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwtToken(authentication);
+        String jwt = jwtAuthentication(loginDTO.getUsername(), loginDTO.getPassword());
         return ResponseEntity.ok(Response.builder()
-                .statusMsg("Authentication completed!")
+                .statusMsg("Authentication successfully completed")
                 .jwtToken(jwt).build());
     }
 
@@ -49,22 +46,15 @@ public class PublicController {
     public ResponseEntity<Response> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
         //TODO: convert registerDTO to user right here (for purpose of validation)
         userService.registerNewUser(registerDTO);
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        registerDTO.getUsername(),
-                        registerDTO.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateJwtToken(authentication);
+        String jwt = jwtAuthentication(registerDTO.getUsername(), registerDTO.getPassword());
         return ResponseEntity.ok(Response.builder()
-                .statusMsg("User successfully registered!")
+                .statusMsg("User successfully registered")
                 .jwtToken(jwt)
                 .build());
     }
 
-    @GetMapping("/watchface")
-    public ResponseEntity<Response> getWFbyID(@RequestParam int id) {
+    @GetMapping("/watchfaces/{id}")
+    public ResponseEntity<Response> getWFbyID(@PathVariable int id) {
         WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(id);
         return ResponseEntity.ok(Response.builder().statusMsg("WatchFace found").watchFace(watchFaceDTO).build());
     }
@@ -78,11 +68,22 @@ public class PublicController {
                 .watchFaceList(watchFaceDtoList)
                 .build());
     }
+
+    private String jwtAuthentication(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        username,
+                        password
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return jwtProvider.generateJwtToken(authentication);
+    }
     // @GetMapping("/watchface")
 /*
 /api/public/
 +register(RegisterData rd);
-login();
++login();
 ? recoverPassword();
 + getWFs(int lastID); //returns 50 wfs
 ? getWFsByFilter(Filter filter);

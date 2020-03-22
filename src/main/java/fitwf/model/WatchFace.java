@@ -21,19 +21,19 @@ public class WatchFace {
     private User user;
 
     @NotNull
-    @Column(name = "preview_uri")
+    @Column(name = "preview_uri", updatable = false)
     private String preview_uri;
 
     @NotNull
-    @Column(name = "file_uri")
+    @Column(name = "file_uri", updatable = false)
     private String file_uri;
 
     @NotNull
-    @Column(name = "downloads")
+    @Column(name = "downloads", updatable = false)
     private int downloads;
 
     @NotNull
-    @Column(name = "features")
+    @Column(name = "features", updatable = false)
     private String features;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")

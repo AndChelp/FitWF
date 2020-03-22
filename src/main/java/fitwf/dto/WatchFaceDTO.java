@@ -17,7 +17,7 @@ public class WatchFaceDTO {
 
     private int downloads;
 
-    private int testLikes;
+    private int likes;
     
     private String features;
 
@@ -28,7 +28,7 @@ public class WatchFaceDTO {
         this.preview_uri = watchFace.getPreview_uri();
         this.file_uri = watchFace.getFile_uri();
         this.downloads = watchFace.getDownloads();
-        this.testLikes = watchFace.getUserLikes().size();
+        this.likes = watchFace.getUserLikes().size();
         this.features = watchFace.getFeatures();
     }
 }

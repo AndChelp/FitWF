@@ -15,6 +15,7 @@ public class UserPrinciple implements UserDetails {
     private String password;
     private boolean enable;
     private Collection<? extends GrantedAuthority> authorities;
+
     public UserPrinciple(int id, String username, String email, String password, boolean enable, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;

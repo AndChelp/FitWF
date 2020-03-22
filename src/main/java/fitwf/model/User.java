@@ -1,5 +1,6 @@
 package fitwf.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,18 +19,18 @@ public class User {
     private int id;
 
     //    @ValidUsername
-    @Column(name = "username")
+    @Column(name = "username", updatable = false)
     private String username;
 
     @Email
-    @Column(name = "email")
+    @Column(name = "email", updatable = false)
     private String email;
 
     //    @ValidPassword
-    @Column(name = "password")
+    @Column(name = "password", updatable = false)
     private String password;
 
-    @Column(name = "enable")
+    @Column(name = "enable", updatable = false)
     private boolean enable = true;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
