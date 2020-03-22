@@ -22,7 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/password/change")
+    @PutMapping("/password/change")
     public ResponseEntity<Response> changePassword(@RequestParam String oldPassword, @RequestParam String newPassword) {
         userService.changePassword(oldPassword, newPassword);
         return ResponseEntity.ok(Response.builder()
@@ -30,8 +30,8 @@ public class UserController {
                 .build());
     }
 
-    @PostMapping(value = "/watchfaces/add")
-    public ResponseEntity<Response> addNewWatchFace( /*@RequestParam MultipartFile watchFaceBin*/) {
+    @PostMapping("/watchfaces/add")
+    public ResponseEntity<Response> addNewWF( /*@RequestParam MultipartFile watchFaceBin*/) {
         /*
 Процесс загрузки циферблата:
     получить .bin файл
@@ -56,20 +56,33 @@ public class UserController {
         watchFace.setPreview_uri("preview");
         watchFace.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         watchFaceService.addNewWF(watchFace);
-        return ResponseEntity.ok(Response.builder().build());
+        return ResponseEntity.ok(Response.builder()
+                .build());
+    }
+
+    @DeleteMapping("/watchfaces/delete")
+    public ResponseEntity<Response> deleteWF(@RequestParam int id) {
+        watchFaceService.deleteByID(id);
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("WatchFace with ID=" + id + " successfully deleted")
+                .build());
     }
 }
 
 
 /*
 /api/user/
-changePassword(String oldPassword, String newPassword);
++changePassword(String oldPassword, String newPassword);
+
 getLikedWFs(int lastID); //returns 50 wfs
 getFavoriteWFs(int lastID); //50 WFs
-addWF(WF wf);
-deleteWF(int wfID);
+
+?addWF(WF wf);
++deleteWF(int wfID);
+
 setLike(int wfID);
 deleteLike(int wfID);
+
 addToFavorites(int wfID);
 deleteFromFavorites(int wfID);
 */

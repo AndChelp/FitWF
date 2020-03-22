@@ -22,4 +22,14 @@ public class Role {
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "roles")
     private Set<User> users;
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = 1;
+        result = result * PRIME + this.getId();
+        final Object $name = this.getName();
+        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
+        return result;
+    }
 }

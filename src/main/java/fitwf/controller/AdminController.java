@@ -15,6 +15,7 @@ public class AdminController {
     unblockUser(int userID);
     deleteAllUserWF(int userID);
     deleteAllUserLikes(int userID);
+    deleteWF(int wfID);
     */
     @GetMapping("/test")
     public String test() {
