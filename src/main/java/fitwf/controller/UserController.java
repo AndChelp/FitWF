@@ -1,14 +1,20 @@
 package fitwf.controller;
 
+import fitwf.dto.WatchFaceDTO;
 import fitwf.entity.User;
 import fitwf.entity.WatchFace;
 import fitwf.response.Response;
+import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -67,6 +73,24 @@ public class UserController {
                 .statusMsg("WatchFace with ID=" + id + " successfully deleted")
                 .build());
     }
+
+    @GetMapping("/likes/liked")
+    public ResponseEntity<Response> getLikedWFs(@RequestParam int offset) {
+        List<WatchFace> watchFaceSet = watchFaceService.getFiftyLikedWatchFaces(offset);
+        return ResponseEntity.ok(Response.builder()
+                .itemCount(watchFaceSet.size())
+                .watchFaceList(watchFaceSet.stream().map(WatchFaceDTO::new).collect(Collectors.toList()))
+                .build());
+    }
+
+    @GetMapping("/favorite/favorited")
+    public ResponseEntity<Response> getFavoritedWFs(@RequestParam int offset) {
+        List<WatchFace> watchFaceSet = watchFaceService.getFiftyFavoritedWatchFaces(offset);
+        return ResponseEntity.ok(Response.builder()
+                .itemCount(watchFaceSet.size())
+                .watchFaceList(watchFaceSet.stream().map(WatchFaceDTO::new).collect(Collectors.toList()))
+                .build());
+    }
 }
 
 
@@ -74,8 +98,8 @@ public class UserController {
 /api/user/
 +changePassword(String oldPassword, String newPassword);
 
-getLikedWFs(int lastID); //returns 50 wfs
-getFavoriteWFs(int lastID); //50 WFs
++getLikedWFs(int lastID); //returns 50 wfs
++getFavoriteWFs(int lastID); //50 WFs
 
 ?addWF(WF wf);
 +deleteWF(int wfID);

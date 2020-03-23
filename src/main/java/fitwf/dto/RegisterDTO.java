@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 
-//TODO: return validate back to the User
+//TODO: realize validation
 @Getter
 @Setter
 public class RegisterDTO {

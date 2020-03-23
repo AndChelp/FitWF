@@ -1,6 +1,5 @@
 package fitwf.security.jwt;
 
-import fitwf.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,9 +12,9 @@ public class JwtProvider {
     private String jwtSecret;
 
     public String generateJwtToken(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        JwtUser jwtUser = (JwtUser) authentication.getPrincipal();
         return "Bearer_" + Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(jwtUser.getUsername())
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }

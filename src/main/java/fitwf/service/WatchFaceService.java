@@ -1,15 +1,18 @@
 package fitwf.service;
 
 import fitwf.dto.WatchFaceDTO;
-import fitwf.entity.Role;
 import fitwf.entity.User;
 import fitwf.entity.WatchFace;
 import fitwf.exception.PermissionDeniedException;
+import fitwf.exception.UserNotFoundException;
 import fitwf.exception.WatchFaceNotFoundException;
 import fitwf.repository.RoleRepository;
+import fitwf.repository.UserRepository;
 import fitwf.repository.WatchFaceRepository;
 import fitwf.security.RoleName;
+import fitwf.security.jwt.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +23,13 @@ import java.util.stream.Collectors;
 public class WatchFaceService {
     private final WatchFaceRepository watchFaceRepository;
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public WatchFaceService(WatchFaceRepository watchFaceRepository, RoleRepository roleRepository) {
+    public WatchFaceService(WatchFaceRepository watchFaceRepository, RoleRepository roleRepository, UserRepository userRepository) {
         this.watchFaceRepository = watchFaceRepository;
         this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
     }
 
     public void addNewWF(WatchFace watchFace) {
@@ -61,10 +66,10 @@ public class WatchFaceService {
         if (!watchFace.isEnabled())
             throw new WatchFaceNotFoundException("WatchFace with id=" + id + " was already deleted");
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Role roleAdmin = roleRepository.findByName(RoleName.ROLE_ADMIN);
-        boolean isOwner = watchFace.getUser().getId() == user.getId();
-        boolean isAdmin = user.getRoles().stream().anyMatch(role -> role.getId() == roleAdmin.getId());
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        boolean isOwner = watchFace.getUser().getId() == jwtUser.getId();
+        boolean isAdmin = jwtUser.getRoles().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.name()));
         if (isAdmin || isOwner)
             watchFaceRepository.deleteById(id);
         else
@@ -90,6 +95,32 @@ public class WatchFaceService {
         return watchFaceList
                 .stream()
                 .map(WatchFaceDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    /*TODO: Загрузить все сразу при аутентификации или оставить как есть - ?
+    Или получить через запрос в бд с условием доступности циферблата*/
+    public List<WatchFace> getFiftyLikedWatchFaces(int offsetStart) {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getOne(jwtUser.getId());
+        List<WatchFace> watchFaceList = user.getLikedWatchFaces();
+        if (offsetStart >= watchFaceList.size())
+            throw new WatchFaceNotFoundException("There no more liked WatchFaces");
+        int offsetEnd = Math.min(offsetStart + /*TODO:replace 3 with 50*/3, watchFaceList.size());
+        return watchFaceList.subList(offsetStart, offsetEnd).stream()
+                .filter(WatchFace::isEnabled)
+                .collect(Collectors.toList());
+    }
+
+    public List<WatchFace> getFiftyFavoritedWatchFaces(int offsetStart) {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.getOne(jwtUser.getId());
+        List<WatchFace> watchFaceList = user.getFavoritedWatchFaces();
+        if (offsetStart >= watchFaceList.size())
+            throw new WatchFaceNotFoundException("There no more liked WatchFaces");
+        int offsetEnd = Math.min(offsetStart + /*TODO:replace 3 with 50*/3, watchFaceList.size());
+        return watchFaceList.subList(offsetStart, offsetEnd).stream()
+                .filter(WatchFace::isEnabled)
                 .collect(Collectors.toList());
     }
 }

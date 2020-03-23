@@ -2,6 +2,8 @@ package fitwf.response;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fitwf.dto.UserDTO;
 import fitwf.dto.WatchFaceDTO;
 import lombok.AllArgsConstructor;
@@ -25,7 +27,6 @@ public class Response {
     private List<WatchFaceDTO> watchFaceList;
     private WatchFaceDTO watchFace;
     private String jwtToken;
-
     private Response() {
     }
 }

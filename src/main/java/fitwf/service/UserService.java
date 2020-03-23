@@ -6,6 +6,7 @@ import fitwf.exception.*;
 import fitwf.repository.RoleRepository;
 import fitwf.repository.UserRepository;
 import fitwf.security.RoleName;
+import fitwf.security.jwt.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,13 +31,13 @@ public class UserService implements UserDetailsService {
     }
 
     public void changePassword(String oldPassword, String newPassword) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String currentPassword = user.getPassword();
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentPassword = jwtUser.getPassword();
         if (!passwordEncoder.matches(oldPassword, currentPassword))
             throw new InvalidPasswordException("Old password is invalid");
         if (oldPassword.equals(newPassword))
             throw new OldAndNewPasswordEqualException("Old and new passwords cannot be the same");
-        userRepository.updatePassword(user.getId(), passwordEncoder.encode(newPassword));
+        userRepository.updatePassword(jwtUser.getId(), passwordEncoder.encode(newPassword));
     }
 
     public void registerNewUser(RegisterDTO registerDto) {
@@ -54,15 +55,15 @@ public class UserService implements UserDetailsService {
         user.setUsername(registerDto.getUsername());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRoles(Collections.singleton(roleRepository.findByName(RoleName.ROLE_USER)));
+        user.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USER)));
         userRepository.save(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
+        return JwtUser.create(userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Username=" + username + " not found"));
+                        new UsernameNotFoundException("Username=" + username + " not found")));
     }
 }
 

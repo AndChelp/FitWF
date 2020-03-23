@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface WatchFaceRepository extends JpaRepository<WatchFace, Integer> {
     //select * from wathcfaces where id<fromId and enable = true order by desc limit 3
-    List<WatchFace> getFirst3ByIdLessThanEqualAndEnabledTrueOrderByIdDesc(int fromId);
+    List<WatchFace> /*TODO:replace 3 with 50*/getFirst3ByIdLessThanEqualAndEnabledTrueOrderByIdDesc(int fromId);
 
     @Query(value = "SELECT last_value FROM watchfaces_id_seq;", nativeQuery = true)
     int getLastId();

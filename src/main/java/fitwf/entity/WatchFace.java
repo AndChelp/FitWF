@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,9 +42,9 @@ public class WatchFace {
     private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")
-    private Set<User> userLikes;
+    private List<User> userLikes;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteWatchFaces")
-    private Set<User> userFavorites;
+    private List<User> userFavorites;
 
 }
