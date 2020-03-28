@@ -44,7 +44,7 @@ public class WatchFace {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedWatchFaces")
     private List<User> userLikes;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoriteWatchFaces")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoritedWatchFaces")
     private List<User> userFavorites;
 
 }

@@ -59,6 +59,27 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    public void blockUser(int id) {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id=" + id + " not found"));
+        if (user.getId() == jwtUser.getId())
+            throw new PermissionDeniedException("You cannot block yourself");
+        if (!user.isEnabled())
+            throw new PermissionDeniedException("User with id=" + id + " is already blocked");
+        userRepository.block(id);
+    }
+
+    public void unblockUser(int id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id=" + id + " not found"));
+        if (user.isEnabled())
+            throw new PermissionDeniedException("User with id=" + id + " is not blocked");
+        userRepository.unblock(id);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return JwtUser.create(userRepository.findByUsername(username)

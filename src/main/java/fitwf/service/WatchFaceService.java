@@ -64,7 +64,7 @@ public class WatchFaceService {
                         new WatchFaceNotFoundException("WatchFace with id=" + id + " not found"));
 
         if (!watchFace.isEnabled())
-            throw new WatchFaceNotFoundException("WatchFace with id=" + id + " was already deleted");
+            throw new PermissionDeniedException("WatchFace with id=" + id + " was already deleted");
 
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

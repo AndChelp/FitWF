@@ -54,7 +54,7 @@ public class PublicController {
     }
 
     @GetMapping("/watchfaces/{id}")
-    public ResponseEntity<Response> getWFbyID(@RequestParam int id) {
+    public ResponseEntity<Response> getWFbyID(@PathVariable int id) {
         WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(id);
         return ResponseEntity.ok(Response.builder()
                 .statusMsg("WatchFace found")

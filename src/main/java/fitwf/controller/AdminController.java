@@ -1,14 +1,23 @@
 package fitwf.controller;
 
 import fitwf.entity.User;
+import fitwf.response.Response;
+import fitwf.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+    private final UserService userService;
+
+    @Autowired
+    public AdminController(UserService userService) {
+        this.userService = userService;
+    }
+
     /*
     /api/admin/
     blockUser(int userID);
@@ -21,5 +30,21 @@ public class AdminController {
     public String test() {
         System.out.println(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
         return "test";
+    }
+
+    @PutMapping("/users/block")
+    public ResponseEntity<Response> blockUser(@RequestParam int id) {
+        userService.blockUser(id);
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("User blocked")
+                .build());
+    }
+
+    @PutMapping("/users/unblock")
+    public ResponseEntity<Response> unblockUser(@RequestParam int id) {
+        userService.unblockUser(id);
+        return ResponseEntity.ok(Response.builder()
+                .statusMsg("User unblocked")
+                .build());
     }
 }
