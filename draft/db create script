@@ -1,0 +1,64 @@
+#user#
+CREATE USER fitwf_admin WITH PASSWORD 'fitwf_pass';
+
+nano /etc/postgresql/12/main/pg_hba.conf
+local   fitwf           fitwf_admin                             md5
+
+#database#
+CREATE DATABASE fitwf;
+\c fitwf
+grant all privileges on all tables in schema public to fitwf_admin;
+grant all privileges on all sequences in schema public to fitwf_admin;
+grant all privileges on all procedures in schema public to fitwf_admin;
+grant all privileges on all functions in schema public to fitwf_admin;
+
+CREATE TABLE "users" (
+	"id" serial NOT NULL,
+	"username" varchar(30) NOT NULL,
+	"email" varchar(300) NOT NULL,
+	"password" varchar(60) NOT NULL,
+	"enable" BOOLEAN NOT NULL,
+	CONSTRAINT "users_pk" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "watchfaces" (
+	"id" serial NOT NULL,
+	"id_user" int NOT NULL,
+	"preview_uri" varchar(50) NOT NULL,
+	"file_uri" varchar(50) NOT NULL,
+	"downloads" int NOT NULL,
+	"features" varchar(300) NOT NULL,
+	CONSTRAINT "watchfaces_pk" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "liked_wf" (
+	"id_user" int NOT NULL,
+	"id_wf" int NOT NULL,
+	CONSTRAINT "liked_wf_pk" PRIMARY KEY ("id_user","id_wf")
+);
+
+CREATE TABLE "favorite_wf" (
+	"id_user" int NOT NULL,
+	"id_wf" int NOT NULL,
+	CONSTRAINT "favorite_wf_pk" PRIMARY KEY ("id_user","id_wf")
+);
+
+CREATE TABLE "role" (
+	"id" serial NOT NULL,
+	"name" varchar(5) NOT NULL UNIQUE,
+	CONSTRAINT "role_pk" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "user_roles" (
+	"id_user" int NOT NULL,
+	"id_role" int NOT NULL,
+	CONSTRAINT "user_roles_pk" PRIMARY KEY ("id_user","id_role")
+);
+
+ALTER TABLE "watchfaces" ADD CONSTRAINT "watchfaces_fk0" FOREIGN KEY ("id_user") REFERENCES "users"("id");
+ALTER TABLE "liked_wf" ADD CONSTRAINT "liked_wf_fk0" FOREIGN KEY ("id_user") REFERENCES "users"("id");
+ALTER TABLE "liked_wf" ADD CONSTRAINT "liked_wf_fk1" FOREIGN KEY ("id_wf") REFERENCES "watchfaces"("id");
+ALTER TABLE "favorite_wf" ADD CONSTRAINT "favorite_wf_fk0" FOREIGN KEY ("id_user") REFERENCES "users"("id");
+ALTER TABLE "favorite_wf" ADD CONSTRAINT "favorite_wf_fk1" FOREIGN KEY ("id_wf") REFERENCES "watchfaces"("id");
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_fk0" FOREIGN KEY ("id_user") REFERENCES "users"("id");
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_fk1" FOREIGN KEY ("id_role") REFERENCES "role"("id");
