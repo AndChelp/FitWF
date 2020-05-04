@@ -22,17 +22,39 @@ import java.util.stream.Collectors;
 @Service
 public class WatchFaceService {
     private final WatchFaceRepository watchFaceRepository;
-    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public WatchFaceService(WatchFaceRepository watchFaceRepository, RoleRepository roleRepository, UserRepository userRepository) {
+    public WatchFaceService(WatchFaceRepository watchFaceRepository, UserRepository userRepository) {
         this.watchFaceRepository = watchFaceRepository;
-        this.roleRepository = roleRepository;
         this.userRepository = userRepository;
     }
 
     public void addNewWF(WatchFace watchFace) {
+        /*
+Процесс загрузки циферблата:
+    получить .bin файл
+    валидировать файл
+    проверить наличие .bin:
+        получить md5
+        1)либо поиск по file_uri в базе данных
+        2)либо поиск по директории bin файлов
+        3)либо ???
+        если есть файл - отдать циферблат
+    сгенерировать .png превью
+    сохранить файлы:
+        .bin с md5 в названии в директорию бинарников
+        .png превью с md5(.bin)+"preview" в названии в директорию превью
+    сгенерировать описание
+    сохранить циферблат в бд(юзер, preview_uri, file_uri, описание)
+    вернуть ОК
+*/
+        watchFace.setFeatures("awesome features");
+        watchFace.setFile_uri("file");
+        watchFace.setPreview_uri("preview");
+        JwtUser test = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        watchFace.setUser(userRepository.findByUsername(test.getUsername()).orElseThrow(() -> new UserNotFoundException("")));
         watchFaceRepository.save(watchFace);
     }
 

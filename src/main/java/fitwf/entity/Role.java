@@ -21,6 +21,6 @@ public class Role {
     @Column(name = "name", updatable = false)
     private RoleName name;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "roles")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
     private List<User> users;
 }

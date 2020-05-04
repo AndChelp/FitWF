@@ -8,16 +8,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
 public class JwtUser implements UserDetails {
-    private int id;
-    private String username;
-    private String password;
-    private boolean enabled;
-    private Collection<? extends GrantedAuthority> roles;
+    private final int id;
+    private final String username;
+    private final String password;
+    private final boolean enabled;
+    private final Collection<? extends GrantedAuthority> roles;
 
     public static JwtUser create(User user) {
         return new JwtUser(

@@ -3,7 +3,12 @@ package fitwf.controller;
 import fitwf.dto.LoginDTO;
 import fitwf.dto.RegisterDTO;
 import fitwf.dto.WatchFaceDTO;
+import fitwf.entity.Role;
+import fitwf.entity.User;
+import fitwf.repository.RoleRepository;
+import fitwf.repository.UserRepository;
 import fitwf.response.Response;
+import fitwf.security.RoleName;
 import fitwf.security.jwt.JwtProvider;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
@@ -16,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,12 +32,18 @@ public class PublicController {
     private final WatchFaceService watchFaceService;
     private final UserService userService;
 
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
     @Autowired
-    public PublicController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, WatchFaceService watchFaceService, UserService userService) {
+
+    public PublicController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, WatchFaceService watchFaceService, UserService userService, UserRepository userRepository, RoleRepository roleRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
         this.watchFaceService = watchFaceService;
         this.userService = userService;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/login")

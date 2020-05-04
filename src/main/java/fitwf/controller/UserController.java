@@ -38,33 +38,14 @@ public class UserController {
 
     @PostMapping("/watchfaces/add")
     public ResponseEntity<Response> addNewWF( /*@RequestParam MultipartFile watchFaceBin*/) {
-        /*
-Процесс загрузки циферблата:
-    получить .bin файл
-    валидировать файл
-    проверить наличие .bin:
-        получить md5
-        1)либо поиск по file_uri в базе данных
-        2)либо поиск по директории bin файлов
-        3)либо ???
-        если есть файл - отдать циферблат
-    сгенерировать .png превью
-    сохранить файлы:
-        .bin с md5 в названии в директорию бинарников
-        .png превью с md5(.bin)+"preview" в названии в директорию превью
-    сгенерировать описание
-    сохранить циферблат в бд(юзер, preview_uri, file_uri, описание)
-    вернуть ОК
-*/
         WatchFace watchFace = new WatchFace();
-        watchFace.setFeatures("awesome features");
-        watchFace.setFile_uri("file");
-        watchFace.setPreview_uri("preview");
-        watchFace.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         watchFaceService.addNewWF(watchFace);
         return ResponseEntity.ok(Response.builder()
                 .build());
     }
+   /* Bearer_eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1In0.G6U0_4wEMuAnBn1Xu2DxrYjT8ETU-0587qV4vmG1-h9RC8iSGjJmuI36si_BNfzpEltXet6A01-5GCG135uqog
+    Bearer_eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1In0.G6U0_4wEMuAnBn1Xu2DxrYjT8ETU-0587qV4vmG1-h9RC8iSGjJmuI36si_BNfzpEltXet6A01-5GCG135uqog
+    */
 
     @DeleteMapping("/watchfaces/delete")
     public ResponseEntity<Response> deleteWF(@RequestParam int id) {

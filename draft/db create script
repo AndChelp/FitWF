@@ -1,10 +1,11 @@
-#user#
+-----------#user#-----------
 CREATE USER fitwf_admin WITH PASSWORD 'fitwf_pass';
 
 nano /etc/postgresql/12/main/pg_hba.conf
 local   fitwf           fitwf_admin                             md5
 
-#database#
+
+-----------#database#-----------
 CREATE DATABASE fitwf;
 \c fitwf
 grant all privileges on all tables in schema public to fitwf_admin;
@@ -28,6 +29,7 @@ CREATE TABLE "watchfaces" (
 	"file_uri" varchar(50) NOT NULL,
 	"downloads" int NOT NULL,
 	"features" varchar(300) NOT NULL,
+	"enable" BOOLEAN NOT NULL,
 	CONSTRAINT "watchfaces_pk" PRIMARY KEY ("id")
 );
 
@@ -45,7 +47,7 @@ CREATE TABLE "favorite_wf" (
 
 CREATE TABLE "role" (
 	"id" serial NOT NULL,
-	"name" varchar(5) NOT NULL UNIQUE,
+	"name" varchar(10) NOT NULL UNIQUE,
 	CONSTRAINT "role_pk" PRIMARY KEY ("id")
 );
 
@@ -62,3 +64,40 @@ ALTER TABLE "favorite_wf" ADD CONSTRAINT "favorite_wf_fk0" FOREIGN KEY ("id_user
 ALTER TABLE "favorite_wf" ADD CONSTRAINT "favorite_wf_fk1" FOREIGN KEY ("id_wf") REFERENCES "watchfaces"("id");
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_fk0" FOREIGN KEY ("id_user") REFERENCES "users"("id");
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_fk1" FOREIGN KEY ("id_role") REFERENCES "role"("id");
+
+
+-----------#procedures#-----------
+CREATE PROCEDURE UPDATE_USER_PASSWORD(id_user INTEGER, new_password VARCHAR(60))
+LANGUAGE SQL
+AS $$
+UPDATE users SET password = new_password WHERE id = id_user;
+$$;
+
+CREATE PROCEDURE BLOCK_USER(id_user INTEGER)
+LANGUAGE SQL
+AS $$
+UPDATE users SET enable = false WHERE id = id_user;
+$$;
+
+CREATE PROCEDURE UNBLOCK_USER(id_user INTEGER)
+LANGUAGE SQL
+AS $$
+UPDATE users SET enable = true WHERE id = id_user;
+$$;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

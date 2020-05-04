@@ -2,6 +2,7 @@ package fitwf.controller;
 
 import fitwf.entity.User;
 import fitwf.response.Response;
+import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AdminController {
     */
     @GetMapping("/test")
     public String test() {
-        System.out.println(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
+        System.out.println(((JwtUser) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
         return "test";
     }
 
