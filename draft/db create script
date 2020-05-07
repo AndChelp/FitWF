@@ -85,6 +85,17 @@ AS $$
 UPDATE users SET enable = true WHERE id = id_user;
 $$;
 
+CREATE PROCEDURE DISABLE_WATCHFACE(wfId INTEGER)
+LANGUAGE SQL
+AS $$
+UPDATE watchfaces SET enable = false WHERE id = wfId;
+$$;
+
+CREATE PROCEDURE DISABLE_USER_WATCHFACES(userId INTEGER)
+LANGUAGE SQL
+AS $$
+UPDATE watchfaces SET enable = false WHERE id_user = userId;
+$$;
 
 
 

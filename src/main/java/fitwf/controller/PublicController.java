@@ -32,18 +32,14 @@ public class PublicController {
     private final WatchFaceService watchFaceService;
     private final UserService userService;
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
     @Autowired
 
-    public PublicController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, WatchFaceService watchFaceService, UserService userService, UserRepository userRepository, RoleRepository roleRepository) {
+    public PublicController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, WatchFaceService watchFaceService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
         this.watchFaceService = watchFaceService;
         this.userService = userService;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/login")
@@ -66,8 +62,8 @@ public class PublicController {
     }
 
     @GetMapping("/watchfaces/{id}")
-    public ResponseEntity<Response> getWFbyID(@PathVariable int id) {
-        WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(id);
+    public ResponseEntity<Response> getWFbyID(@PathVariable int wfId) {
+        WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(wfId);
         return ResponseEntity.ok(Response.builder()
                 .statusMsg("WatchFace found")
                 .watchFace(watchFaceDTO)

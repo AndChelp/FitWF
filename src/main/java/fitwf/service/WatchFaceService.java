@@ -58,51 +58,43 @@ public class WatchFaceService {
         watchFaceRepository.save(watchFace);
     }
 
-    public void deleteByID(int id) {
-        /*
-        Нельзя удалить удаленный циферблат
-        Юзер может удалить только свой циферблат
-        Админ может удалить любой циферблат
-        Проверка для юзера:
-            1) Получить объект циферблата из бд по ID
-                Сравнить владельца с юзером
-                ???
-                profit
-            2) Создать хранимку на стороне бд
-                    CHECK_OWNER(id_user, id_wf):boolean
-                    if select id_user from watchfaces where id = id_wf == id_user
-                    then return true
-                    else return false
-                    end if;
-                вызвать ее
-                решить по результату
-                >>нужна проверка на удаленность цифера
-            3)Пройтись по местной коллекции циферблатов у юзера и найти id
-                >>требует FetchType.EAGER
-        */
-        //Вариант первый
-        WatchFace watchFace = watchFaceRepository.findById(id)
+    public void deleteByUser(int userId){
+        watchFaceRepository.deleteByUser(userId);
+    }
+
+    public void deleteByID(int wfId) {
+        WatchFace watchFace = watchFaceRepository.findById(wfId)
                 .orElseThrow(() ->
-                        new WatchFaceNotFoundException("WatchFace with id=" + id + " not found"));
+                        new WatchFaceNotFoundException("WatchFace with id=" + wfId + " not found"));
 
         if (!watchFace.isEnabled())
-            throw new PermissionDeniedException("WatchFace with id=" + id + " was already deleted");
+            throw new PermissionDeniedException("WatchFace with id=" + wfId + " was already deleted");
+
+        watchFaceRepository.deleteById(wfId);
+    }
+/*
+    public void deleteByID(int wfId) {
+        WatchFace watchFace = watchFaceRepository.findById(wfId)
+                .orElseThrow(() ->
+                        new WatchFaceNotFoundException("WatchFace with id=" + wfId + " not found"));
+
+        if (!watchFace.isEnabled())
+            throw new PermissionDeniedException("WatchFace with id=" + wfId + " was already deleted");
 
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         boolean isOwner = watchFace.getUser().getId() == jwtUser.getId();
-        boolean isAdmin = jwtUser.getRoles().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.name()));
-        if (isAdmin || isOwner)
-            watchFaceRepository.deleteById(id);
+        if (isOwner)
+            watchFaceRepository.deleteById(wfId);
         else
             throw new PermissionDeniedException("You don't have a permission to do it");
     }
-
-    public WatchFaceDTO getWatchFaceByID(int id) {
+*/
+    public WatchFaceDTO getWatchFaceByID(int wfId) {
         return new WatchFaceDTO(
-                watchFaceRepository.findById(id)
+                watchFaceRepository.findById(wfId)
                         .orElseThrow(() ->
-                                new WatchFaceNotFoundException("WatchFace with id=" + id + " not found")));
+                                new WatchFaceNotFoundException("WatchFace with id=" + wfId + " not found")));
     }
 
     public List<WatchFaceDTO> getFiftyWatchFaces(int offsetId) {
@@ -120,28 +112,26 @@ public class WatchFaceService {
                 .collect(Collectors.toList());
     }
 
-    /*TODO: Загрузить все сразу при аутентификации или оставить как есть - ?
-    Или получить через запрос в бд с условием доступности циферблата*/
-    public List<WatchFace> getFiftyLikedWatchFaces(int offsetStart) {
+    public List<WatchFace> getFiftyLikedWatchFaces(int offsetId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.getOne(jwtUser.getId());
         List<WatchFace> watchFaceList = user.getLikedWatchFaces();
-        if (offsetStart >= watchFaceList.size())
+        if (offsetId >= watchFaceList.size())
             throw new WatchFaceNotFoundException("There no more liked WatchFaces");
-        int offsetEnd = Math.min(offsetStart + /*TODO:replace 3 with 50*/3, watchFaceList.size());
-        return watchFaceList.subList(offsetStart, offsetEnd).stream()
+        int offsetEnd = Math.min(offsetId + /*TODO:replace 3 with 50*/3, watchFaceList.size());
+        return watchFaceList.subList(offsetId, offsetEnd).stream()
                 .filter(WatchFace::isEnabled)
                 .collect(Collectors.toList());
     }
 
-    public List<WatchFace> getFiftyFavoritedWatchFaces(int offsetStart) {
+    public List<WatchFace> getFiftyFavoritedWatchFaces(int offsetId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.getOne(jwtUser.getId());
         List<WatchFace> watchFaceList = user.getFavoritedWatchFaces();
-        if (offsetStart >= watchFaceList.size())
+        if (offsetId >= watchFaceList.size())
             throw new WatchFaceNotFoundException("There no more liked WatchFaces");
-        int offsetEnd = Math.min(offsetStart + /*TODO:replace 3 with 50*/3, watchFaceList.size());
-        return watchFaceList.subList(offsetStart, offsetEnd).stream()
+        int offsetEnd = Math.min(offsetId + /*TODO:replace 3 with 50*/3, watchFaceList.size());
+        return watchFaceList.subList(offsetId, offsetEnd).stream()
                 .filter(WatchFace::isEnabled)
                 .collect(Collectors.toList());
     }

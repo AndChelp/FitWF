@@ -28,6 +28,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/test")
+    public String test() {
+        System.out.println(((JwtUser) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
+        return "test";
+    }
+
     @PutMapping("/password/change")
     public ResponseEntity<Response> changePassword(@RequestParam String oldPassword, @RequestParam String newPassword) {
         userService.changePassword(oldPassword, newPassword);
@@ -43,30 +49,27 @@ public class UserController {
         return ResponseEntity.ok(Response.builder()
                 .build());
     }
-   /* Bearer_eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1In0.G6U0_4wEMuAnBn1Xu2DxrYjT8ETU-0587qV4vmG1-h9RC8iSGjJmuI36si_BNfzpEltXet6A01-5GCG135uqog
-    Bearer_eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1In0.G6U0_4wEMuAnBn1Xu2DxrYjT8ETU-0587qV4vmG1-h9RC8iSGjJmuI36si_BNfzpEltXet6A01-5GCG135uqog
-    */
-
+/*
     @DeleteMapping("/watchfaces/delete")
-    public ResponseEntity<Response> deleteWF(@RequestParam int id) {
-        watchFaceService.deleteByID(id);
+    public ResponseEntity<Response> deleteWF(@RequestParam int wfId) {
+        watchFaceService.deleteByID(wfId);
         return ResponseEntity.ok(Response.builder()
-                .statusMsg("WatchFace with ID=" + id + " successfully deleted")
+                .statusMsg("WatchFace with ID=" + wfId + " successfully deleted")
                 .build());
     }
-
-    @GetMapping("/likes/liked")
-    public ResponseEntity<Response> getLikedWFs(@RequestParam int offset) {
-        List<WatchFace> watchFaceSet = watchFaceService.getFiftyLikedWatchFaces(offset);
+*/
+    @GetMapping("/watchfaces/liked")
+    public ResponseEntity<Response> getLikedWFs(@RequestParam int offsetId) {
+        List<WatchFace> watchFaceSet = watchFaceService.getFiftyLikedWatchFaces(offsetId);
         return ResponseEntity.ok(Response.builder()
                 .itemCount(watchFaceSet.size())
                 .watchFaceList(watchFaceSet.stream().map(WatchFaceDTO::new).collect(Collectors.toList()))
                 .build());
     }
 
-    @GetMapping("/favorite/favorited")
-    public ResponseEntity<Response> getFavoritedWFs(@RequestParam int offset) {
-        List<WatchFace> watchFaceSet = watchFaceService.getFiftyFavoritedWatchFaces(offset);
+    @GetMapping("/watchfaces/avorited")
+    public ResponseEntity<Response> getFavoritedWFs(@RequestParam int offsetId) {
+        List<WatchFace> watchFaceSet = watchFaceService.getFiftyFavoritedWatchFaces(offsetId);
         return ResponseEntity.ok(Response.builder()
                 .itemCount(watchFaceSet.size())
                 .watchFaceList(watchFaceSet.stream().map(WatchFaceDTO::new).collect(Collectors.toList()))

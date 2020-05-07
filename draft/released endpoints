@@ -1,10 +1,16 @@
-/api/user/password/change | param=[String oldPassword, String newPassword]
-/api/user/watchfaces/delete | param=[int id]
-/api/user/likes/liked | param=[int offset]
-/api/user/favorite/favorited | param=[int offset]
-
-
+PUBLIC
 /api/public/login | body=[LoginDTO loginDTO]
 /api/public/register | body=[RegisterDTO registerDTO]
-/api/public/watchfaces/{id}
+/api/public/watchfaces/{wfId}
 /api/public/watchfaces | param=[offsetId]
+
+USER
+/api/user/password/change | param=[String oldPassword, String newPassword]
+/api/user/watchfaces/liked | param=[int offsetId]
+/api/user/watchfaces/favorited | param=[int offsetId]
+
+ADMIN
+/api/admin/users/block | param=[int userId]
+/api/admin/users/unblock | param=[int userId]
+/api/admin/users/watchfaces/delete | param=[int wfId]
+/api/admin/users/watchfaces/delete/all | param=[int userId]

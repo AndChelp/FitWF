@@ -18,9 +18,14 @@ public interface WatchFaceRepository extends JpaRepository<WatchFace, Integer> {
     @Query(value = "SELECT last_value FROM watchfaces_id_seq;", nativeQuery = true)
     int getLastId();
 
+    @Transactional
+    @Modifying
+    @Query(value = "CALL DISABLE_USER_WATCHFACES(:userId)", nativeQuery = true)
+    void deleteByUser(@Param("userId") Integer userId);
+
     @Override
     @Transactional
     @Modifying
-    @Query(value = "CALL DISABLE_WATCHFACE(:id)", nativeQuery = true)
-    void deleteById(@Param("id") Integer id);
+    @Query(value = "CALL DISABLE_WATCHFACE(:wfId)", nativeQuery = true)
+    void deleteById(@Param("wfId") Integer wfId);
 }
