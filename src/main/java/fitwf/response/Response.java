@@ -27,6 +27,7 @@ public class Response {
     private List<WatchFaceDTO> watchFaceList;
     private WatchFaceDTO watchFace;
     private String jwtToken;
+
     private Response() {
     }
 }

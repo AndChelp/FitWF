@@ -1,7 +1,6 @@
 package fitwf.controller;
 
 import fitwf.dto.WatchFaceDTO;
-import fitwf.entity.User;
 import fitwf.entity.WatchFace;
 import fitwf.response.Response;
 import fitwf.security.jwt.JwtUser;
@@ -13,8 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -49,37 +48,47 @@ public class UserController {
         return ResponseEntity.ok(Response.builder()
                 .build());
     }
-/*
-    @DeleteMapping("/watchfaces/delete")
-    public ResponseEntity<Response> deleteWF(@RequestParam int wfId) {
-        watchFaceService.deleteByID(wfId);
-        return ResponseEntity.ok(Response.builder()
-                .statusMsg("WatchFace with ID=" + wfId + " successfully deleted")
-                .build());
-    }
-*/
+
     @GetMapping("/watchfaces/liked")
     public ResponseEntity<Response> getLikedWFs(@RequestParam int offsetId) {
-        List<WatchFace> watchFaceSet = watchFaceService.getFiftyLikedWatchFaces(offsetId);
+        List<WatchFaceDTO> watchFaceSet = watchFaceService.getFiftyLikedWatchFaces(offsetId);
+
         return ResponseEntity.ok(Response.builder()
                 .itemCount(watchFaceSet.size())
-                .watchFaceList(watchFaceSet.stream().map(WatchFaceDTO::new).collect(Collectors.toList()))
+                .watchFaceList(watchFaceSet)
                 .build());
     }
 
-    @GetMapping("/watchfaces/avorited")
+    @GetMapping("/watchfaces/favorited")
     public ResponseEntity<Response> getFavoritedWFs(@RequestParam int offsetId) {
-        List<WatchFace> watchFaceSet = watchFaceService.getFiftyFavoritedWatchFaces(offsetId);
+        List<WatchFaceDTO> watchFaceSet = watchFaceService.getFiftyFavoritedWatchFaces(offsetId);
         return ResponseEntity.ok(Response.builder()
                 .itemCount(watchFaceSet.size())
-                .watchFaceList(watchFaceSet.stream().map(WatchFaceDTO::new).collect(Collectors.toList()))
+                .watchFaceList(watchFaceSet)
                 .build());
     }
+
+    @PostMapping("/watchfaces/like")
+    public ResponseEntity<Response> like(@RequestParam int wfId) {
+        watchFaceService.like(wfId);
+        return ResponseEntity.ok(Response.builder()
+                .build());
+    }
+
+    @PostMapping("/watchfaces/favorite")
+    public ResponseEntity<Response> favorite(@RequestParam int wfId) {
+        watchFaceService.favorite(wfId);
+        return ResponseEntity.ok(Response.builder()
+                .build());
+    }
+
+
 }
 
 
 /*
-/api/user/
+/api/user/etDownloads();
+        this.likes = watchFace.getUserLikes(
 +changePassword(String oldPassword, String newPassword);
 
 +getLikedWFs(int lastID); //returns 50 wfs

@@ -1,5 +1,8 @@
 package fitwf.controller;
 
+import fitwf.dto.UserDTO;
+import fitwf.dto.WatchFaceDTO;
+import fitwf.entity.WatchFace;
 import fitwf.response.Response;
 import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
@@ -8,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -21,13 +27,6 @@ public class AdminController {
         this.watchFaceService = watchFaceService;
     }
 
-    /*
-    /api/admin/
-    +blockUser(int userID);
-    +unblockUser(int userID);
-    deleteAllUserWF(int userID);
-    deleteWF(int wfID);
-    */
     @GetMapping("/test")
     public String test() {
         System.out.println(((JwtUser) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getUsername());
@@ -65,4 +64,28 @@ public class AdminController {
                 .statusMsg("User unblocked")
                 .build());
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<Response> getUsers(@RequestParam int startId, @RequestParam int endId) {
+        List<UserDTO> userDTOList = userService.getUsers(startId, endId);
+        return ResponseEntity.ok(Response.builder()
+                .itemCount(userDTOList.size())
+                .userList(userDTOList)
+                .build());
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

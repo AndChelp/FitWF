@@ -1,6 +1,7 @@
 package fitwf.service;
 
 import fitwf.dto.RegisterDTO;
+import fitwf.dto.UserDTO;
 import fitwf.entity.User;
 import fitwf.exception.*;
 import fitwf.repository.RoleRepository;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,6 +31,15 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+    }
+
+    public List<UserDTO> getUsers(int startId, int endId) {
+        List<User> userList = userRepository.getList(startId, endId);
+        if (userList.isEmpty()) throw new UserNotFoundException("There no more users");
+        return userList
+                .stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toList());
     }
 
     public void changePassword(String oldPassword, String newPassword) {

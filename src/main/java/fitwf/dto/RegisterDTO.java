@@ -17,4 +17,9 @@ public class RegisterDTO {
 
     //@ValidPassword
     private String password;
+
+    @Override
+    public String toString() {
+        return "Username = " + username + " email = " + email;
+    }
 }

@@ -8,6 +8,8 @@ USER
 /api/user/password/change | param=[String oldPassword, String newPassword]
 /api/user/watchfaces/liked | param=[int offsetId]
 /api/user/watchfaces/favorited | param=[int offsetId]
+/api/user/watchfaces/like | param=[int wfId]
+/api/user/watchfaces/favorite | param=[int wfId]
 
 ADMIN
 /api/admin/users/block | param=[int userId]

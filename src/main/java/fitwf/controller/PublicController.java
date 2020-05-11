@@ -5,13 +5,17 @@ import fitwf.dto.RegisterDTO;
 import fitwf.dto.WatchFaceDTO;
 import fitwf.entity.Role;
 import fitwf.entity.User;
+import fitwf.log.Level;
+import fitwf.log.annotation.Log;
 import fitwf.repository.RoleRepository;
 import fitwf.repository.UserRepository;
 import fitwf.response.Response;
 import fitwf.security.RoleName;
 import fitwf.security.jwt.JwtProvider;
+import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +46,12 @@ public class PublicController {
         this.userService = userService;
     }
 
+    @GetMapping("/test")
+    public Object test() {
+        return "tested";
+    }
+
+    @Log(Level.INFO)
     @PostMapping("/login")
     public ResponseEntity<Response> authenticateUser(@RequestBody @Valid LoginDTO loginDTO) {
         String jwt = jwtAuthentication(loginDTO.getUsername(), loginDTO.getPassword());
@@ -50,6 +60,7 @@ public class PublicController {
                 .jwtToken(jwt).build());
     }
 
+    @Log(Level.INFO)
     @PostMapping("/register")
     public ResponseEntity<Response> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
         //TODO: convert registerDTO to user right here (for purpose of validation)
@@ -61,7 +72,8 @@ public class PublicController {
                 .build());
     }
 
-    @GetMapping("/watchfaces/{id}")
+    @Log(Level.INFO)
+    @GetMapping("/watchfaces/{wfId}")
     public ResponseEntity<Response> getWFbyID(@PathVariable int wfId) {
         WatchFaceDTO watchFaceDTO = watchFaceService.getWatchFaceByID(wfId);
         return ResponseEntity.ok(Response.builder()
@@ -70,6 +82,7 @@ public class PublicController {
                 .build());
     }
 
+    @Log(Level.INFO)
     @GetMapping("/watchfaces")
     public ResponseEntity<Response> getFiftyWFs(@RequestParam int offsetId) {
         List<WatchFaceDTO> watchFaceDtoList = watchFaceService.getFiftyWatchFaces(offsetId);

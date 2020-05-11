@@ -6,18 +6,16 @@ import fitwf.entity.WatchFace;
 import fitwf.exception.PermissionDeniedException;
 import fitwf.exception.UserNotFoundException;
 import fitwf.exception.WatchFaceNotFoundException;
-import fitwf.repository.RoleRepository;
 import fitwf.repository.UserRepository;
 import fitwf.repository.WatchFaceRepository;
-import fitwf.security.RoleName;
 import fitwf.security.jwt.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 public class WatchFaceService {
@@ -25,9 +23,20 @@ public class WatchFaceService {
     private final UserRepository userRepository;
 
     @Autowired
+
     public WatchFaceService(WatchFaceRepository watchFaceRepository, UserRepository userRepository) {
         this.watchFaceRepository = watchFaceRepository;
         this.userRepository = userRepository;
+    }
+
+    public void like(int wfId) {
+        JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        watchFaceRepository.like(user.getId(), wfId);
+    }
+
+    public void favorite(int wfId) {
+        JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        watchFaceRepository.favorite(user.getId(), wfId);
     }
 
     public void addNewWF(WatchFace watchFace) {
@@ -58,7 +67,7 @@ public class WatchFaceService {
         watchFaceRepository.save(watchFace);
     }
 
-    public void deleteByUser(int userId){
+    public void deleteByUser(int userId) {
         watchFaceRepository.deleteByUser(userId);
     }
 
@@ -72,24 +81,7 @@ public class WatchFaceService {
 
         watchFaceRepository.deleteById(wfId);
     }
-/*
-    public void deleteByID(int wfId) {
-        WatchFace watchFace = watchFaceRepository.findById(wfId)
-                .orElseThrow(() ->
-                        new WatchFaceNotFoundException("WatchFace with id=" + wfId + " not found"));
 
-        if (!watchFace.isEnabled())
-            throw new PermissionDeniedException("WatchFace with id=" + wfId + " was already deleted");
-
-        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        boolean isOwner = watchFace.getUser().getId() == jwtUser.getId();
-        if (isOwner)
-            watchFaceRepository.deleteById(wfId);
-        else
-            throw new PermissionDeniedException("You don't have a permission to do it");
-    }
-*/
     public WatchFaceDTO getWatchFaceByID(int wfId) {
         return new WatchFaceDTO(
                 watchFaceRepository.findById(wfId)
@@ -112,28 +104,52 @@ public class WatchFaceService {
                 .collect(Collectors.toList());
     }
 
-    public List<WatchFace> getFiftyLikedWatchFaces(int offsetId) {
+    public List<WatchFaceDTO> getFiftyLikedWatchFaces(int offsetId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getOne(jwtUser.getId());
+        int userId = jwtUser.getId();
+        User user = userRepository.getOne(userId);
         List<WatchFace> watchFaceList = user.getLikedWatchFaces();
         if (offsetId >= watchFaceList.size())
             throw new WatchFaceNotFoundException("There no more liked WatchFaces");
         int offsetEnd = Math.min(offsetId + /*TODO:replace 3 with 50*/3, watchFaceList.size());
-        return watchFaceList.subList(offsetId, offsetEnd).stream()
+        List<WatchFace> enabledWatchFaces = watchFaceList.subList(offsetId, offsetEnd).stream()
                 .filter(WatchFace::isEnabled)
+                .collect(Collectors.toList());
+        return enabledWatchFaces
+                .stream()
+                .map(watchFace -> new WatchFaceDTO(
+                        watchFace,
+                        true,
+                        checkFavorite(userId, watchFace.getId())))
                 .collect(Collectors.toList());
     }
 
-    public List<WatchFace> getFiftyFavoritedWatchFaces(int offsetId) {
+    public List<WatchFaceDTO> getFiftyFavoritedWatchFaces(int offsetId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getOne(jwtUser.getId());
+        int userId = jwtUser.getId();
+        User user = userRepository.getOne(userId);
         List<WatchFace> watchFaceList = user.getFavoritedWatchFaces();
         if (offsetId >= watchFaceList.size())
             throw new WatchFaceNotFoundException("There no more liked WatchFaces");
         int offsetEnd = Math.min(offsetId + /*TODO:replace 3 with 50*/3, watchFaceList.size());
-        return watchFaceList.subList(offsetId, offsetEnd).stream()
+        List<WatchFace> enabledWatchFaces = watchFaceList.subList(offsetId, offsetEnd).stream()
                 .filter(WatchFace::isEnabled)
                 .collect(Collectors.toList());
+        return enabledWatchFaces
+                .stream()
+                .map(watchFace -> new WatchFaceDTO(
+                        watchFace,
+                        checkLike(userId, watchFace.getId()),
+                        true))
+                .collect(Collectors.toList());
+    }
+
+    protected boolean checkFavorite(int userId, int wfId) {
+        return watchFaceRepository.checkFavorite(userId, wfId);
+    }
+
+    protected boolean checkLike(int userId, int wfId) {
+        return watchFaceRepository.checkLike(userId, wfId);
     }
 }
 

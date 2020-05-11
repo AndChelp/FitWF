@@ -97,8 +97,45 @@ AS $$
 UPDATE watchfaces SET enable = false WHERE id_user = userId;
 $$;
 
+CREATE OR REPLACE PROCEDURE LIKE_WATCHFACE(userId INTEGER, wfId INTEGER)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+IF (SELECT NOT EXISTS(SELECT 1 FROM liked_wf WHERE id_user = userId AND id_wf = wfId)) THEN
+    INSERT INTO liked_wf VALUES (userId, wfId);
+ELSE
+    DELETE FROM liked_wf WHERE id_user = userId AND id_wf = wfId;
+END IF;
+END;
+$$;
 
+CREATE OR REPLACE PROCEDURE FAVORITE_WATCHFACE(userId INTEGER, wfId INTEGER)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+IF (SELECT NOT EXISTS(SELECT 1 FROM favorite_wf WHERE id_user = userId AND id_wf = wfId)) THEN
+    INSERT INTO favorite_wf VALUES (userId, wfId);
+ELSE
+    DELETE FROM favorite_wf WHERE id_user = userId AND id_wf = wfId;
+END IF;
+END;
+$$;
 
+CREATE OR REPLACE FUNCTION CHECK_FAVORITE_WATCHFACE(userId INTEGER, wfId INTEGER) RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $$
+BEGIN
+RETURN (SELECT EXISTS(SELECT 1 FROM favorite_wf WHERE id_user = userId AND id_wf = wfId));
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION CHECK_LIKE_WATCHFACE(userId INTEGER, wfId INTEGER) RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $$
+BEGIN
+RETURN (SELECT EXISTS(SELECT 1 FROM liked_wf WHERE id_user = userId AND id_wf = wfId));
+END;
+$$;
 
 
 
