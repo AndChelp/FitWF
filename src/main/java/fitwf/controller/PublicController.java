@@ -3,29 +3,23 @@ package fitwf.controller;
 import fitwf.dto.LoginDTO;
 import fitwf.dto.RegisterDTO;
 import fitwf.dto.WatchFaceDTO;
-import fitwf.entity.Role;
-import fitwf.entity.User;
 import fitwf.log.Level;
 import fitwf.log.annotation.Log;
-import fitwf.repository.RoleRepository;
-import fitwf.repository.UserRepository;
 import fitwf.response.Response;
 import fitwf.security.RoleName;
 import fitwf.security.jwt.JwtProvider;
-import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -36,9 +30,7 @@ public class PublicController {
     private final WatchFaceService watchFaceService;
     private final UserService userService;
 
-
     @Autowired
-
     public PublicController(AuthenticationManager authenticationManager, JwtProvider jwtProvider, WatchFaceService watchFaceService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
@@ -47,8 +39,8 @@ public class PublicController {
     }
 
     @GetMapping("/test")
-    public Object test() {
-        return "tested";
+    public boolean test() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_USER.name()));
     }
 
     @Log(Level.INFO)

@@ -2,8 +2,6 @@ package fitwf.response;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fitwf.dto.UserDTO;
 import fitwf.dto.WatchFaceDTO;
 import lombok.AllArgsConstructor;

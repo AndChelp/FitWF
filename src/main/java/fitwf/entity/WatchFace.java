@@ -1,17 +1,18 @@
 package fitwf.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "watchfaces")
+@NoArgsConstructor
 public class WatchFace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,4 +48,10 @@ public class WatchFace {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "favoritedWatchFaces")
     private List<User> userFavorites;
 
+    public WatchFace(User user, @NotNull String preview_uri, @NotNull String file_uri, @NotNull String features) {
+        this.user = user;
+        this.preview_uri = preview_uri;
+        this.file_uri = file_uri;
+        this.features = features;
+    }
 }

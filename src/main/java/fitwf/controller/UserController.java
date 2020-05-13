@@ -1,7 +1,6 @@
 package fitwf.controller;
 
 import fitwf.dto.WatchFaceDTO;
-import fitwf.entity.WatchFace;
 import fitwf.response.Response;
 import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
@@ -10,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -41,10 +42,10 @@ public class UserController {
                 .build());
     }
 
-    @PostMapping("/watchfaces/add")
-    public ResponseEntity<Response> addNewWF( /*@RequestParam MultipartFile watchFaceBin*/) {
-        WatchFace watchFace = new WatchFace();
-        watchFaceService.addNewWF(watchFace);
+    @PostMapping("/watchfaces/upload")
+    public ResponseEntity<Response> uploadNewWF(@RequestParam("bin") MultipartFile watchFaceBin,
+                                                @RequestParam("gif") MultipartFile watchFaceGif) throws IOException, NoSuchAlgorithmException {
+        watchFaceService.addNewWatchFace(watchFaceBin, watchFaceGif);
         return ResponseEntity.ok(Response.builder()
                 .build());
     }

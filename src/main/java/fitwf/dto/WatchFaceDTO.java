@@ -1,7 +1,6 @@
 package fitwf.dto;
 
 import fitwf.entity.WatchFace;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +16,6 @@ public class WatchFaceDTO {
     private String features;
     private boolean liked;
     private boolean favorited;
-
 
     public WatchFaceDTO(WatchFace watchFace, boolean liked, boolean favorited) {
         this.id = watchFace.getId();

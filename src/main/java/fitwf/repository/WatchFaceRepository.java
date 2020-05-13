@@ -15,6 +15,9 @@ public interface WatchFaceRepository extends JpaRepository<WatchFace, Integer> {
     //select * from wathcfaces where id<=fromId and enable = true order by id desc limit 3
     List<WatchFace> /*TODO:replace 3 with 50*/getFirst3ByIdLessThanEqualAndEnabledTrueOrderByIdDesc(int fromId);
 
+    @Query(value = "SELECT id FROM watchfaces WHERE file_uri = :fileURI", nativeQuery = true)
+    int getIdByURI(@Param("fileURI") String userId);
+
     @Query(value = "SELECT last_value FROM watchfaces_id_seq;", nativeQuery = true)
     int getLastId();
 
@@ -35,7 +38,6 @@ public interface WatchFaceRepository extends JpaRepository<WatchFace, Integer> {
     void like(@Param("userId") Integer userId, @Param("wfId") Integer wfId);
 
     @Transactional
-    @Modifying
     @Query(value = "SELECT CHECK_LIKE_WATCHFACE(:userId, :wfId)", nativeQuery = true)
     boolean checkLike(@Param("userId") Integer userId, @Param("wfId") Integer wfId);
 
@@ -45,7 +47,6 @@ public interface WatchFaceRepository extends JpaRepository<WatchFace, Integer> {
     void favorite(@Param("userId") Integer userId, @Param("wfId") Integer wfId);
 
     @Transactional
-    @Modifying
     @Query(value = "SELECT CHECK_FAVORITE_WATCHFACE(:userId, :wfId)", nativeQuery = true)
     boolean checkFavorite(@Param("userId") Integer userId, @Param("wfId") Integer wfId);
 

@@ -1,8 +1,6 @@
 package fitwf.controller;
 
 import fitwf.dto.UserDTO;
-import fitwf.dto.WatchFaceDTO;
-import fitwf.entity.WatchFace;
 import fitwf.response.Response;
 import fitwf.security.jwt.JwtUser;
 import fitwf.service.UserService;
@@ -13,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")

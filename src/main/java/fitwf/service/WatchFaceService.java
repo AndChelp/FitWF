@@ -5,14 +5,24 @@ import fitwf.entity.User;
 import fitwf.entity.WatchFace;
 import fitwf.exception.PermissionDeniedException;
 import fitwf.exception.UserNotFoundException;
+import fitwf.exception.WatchFaceAlreadyExistsException;
 import fitwf.exception.WatchFaceNotFoundException;
 import fitwf.repository.UserRepository;
 import fitwf.repository.WatchFaceRepository;
+import fitwf.security.RoleName;
 import fitwf.security.jwt.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,8 +32,13 @@ public class WatchFaceService {
     private final WatchFaceRepository watchFaceRepository;
     private final UserRepository userRepository;
 
-    @Autowired
+    @Value("${upload.path.bin}")
+    private String binUploadPath;
 
+    @Value("${upload.path.gif}")
+    private String gifUploadPath;
+
+    @Autowired
     public WatchFaceService(WatchFaceRepository watchFaceRepository, UserRepository userRepository) {
         this.watchFaceRepository = watchFaceRepository;
         this.userRepository = userRepository;
@@ -39,32 +54,35 @@ public class WatchFaceService {
         watchFaceRepository.favorite(user.getId(), wfId);
     }
 
-    public void addNewWF(WatchFace watchFace) {
-        /*
-Процесс загрузки циферблата:
-    получить .bin файл
-    валидировать файл
-    проверить наличие .bin:
-        получить md5
-        1)либо поиск по file_uri в базе данных
-        2)либо поиск по директории bin файлов
-        3)либо ???
-        если есть файл - отдать циферблат
-    сгенерировать .png превью
-    сохранить файлы:
-        .bin с md5 в названии в директорию бинарников
-        .png превью с md5(.bin)+"preview" в названии в директорию превью
-    сгенерировать описание
-    сохранить циферблат в бд(юзер, preview_uri, file_uri, описание)
-    вернуть ОК
-*/
-        watchFace.setFeatures("awesome features");
-        watchFace.setFile_uri("file");
-        watchFace.setPreview_uri("preview");
-        JwtUser test = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public void addNewWatchFace(MultipartFile watchFaceBin, MultipartFile watchFaceGif) throws NoSuchAlgorithmException, IOException {
+        if (watchFaceBin != null && watchFaceGif != null && watchFaceBin.getName().equals("bin")) {
+            File binUploadDir = new File(binUploadPath);
+            File gifUploadDir = new File(gifUploadPath);
+            if (!binUploadDir.exists() || !gifUploadDir.exists()) {
+                gifUploadDir.mkdirs();
+                binUploadDir.mkdirs();
+            }
+            try (InputStream binInputStream = watchFaceBin.getInputStream()) {
+                String md5Name = DigestUtils.md5DigestAsHex(binInputStream);
+                String binURI = binUploadPath + md5Name + ".bin";
+                File binFile = new File(binURI);
+                if (binFile.exists())
+                    throw new WatchFaceAlreadyExistsException("WatchFace already exists", watchFaceRepository.getIdByURI(binURI));
+                String gifURI = gifUploadPath + md5Name + ".gif";
+                watchFaceBin.transferTo(binFile);
+                watchFaceGif.transferTo(new File(gifURI));
+                JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                User user = userRepository.findByUsername(jwtUser.getUsername()).orElseThrow(() -> new UserNotFoundException(""));
+                WatchFace watchFace = new WatchFace(user, md5Name + ".gif", md5Name + ".bin", "still awesome features");
+                watchFaceRepository.save(watchFace);
+            }
+        }
+    }
 
-        watchFace.setUser(userRepository.findByUsername(test.getUsername()).orElseThrow(() -> new UserNotFoundException("")));
-        watchFaceRepository.save(watchFace);
+    private File multipartToFile(MultipartFile multipart, String fileName) throws IllegalStateException, IOException {
+        File convFile = new File(fileName);
+        multipart.transferTo(convFile);
+        return convFile;
     }
 
     public void deleteByUser(int userId) {
@@ -91,6 +109,7 @@ public class WatchFaceService {
 
     public List<WatchFaceDTO> getFiftyWatchFaces(int offsetId) {
         //TODO: удален диапазон -> возвращает один и тот же список несколько раз подряд
+        boolean isAnonymous = !SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_USER.name()));
         int lastId = watchFaceRepository.getLastId();
         if (lastId == offsetId - 1)
             throw new WatchFaceNotFoundException("There no more WatchFaces");
@@ -98,10 +117,24 @@ public class WatchFaceService {
                 .getFirst3ByIdLessThanEqualAndEnabledTrueOrderByIdDesc(lastId - offsetId);
         if (watchFaceList.isEmpty())
             throw new WatchFaceNotFoundException("There no more WatchFaces");
-        return watchFaceList
-                .stream()
-                .map(WatchFaceDTO::new)
+        List<WatchFace> enabledWatchFaces = watchFaceList.stream()
+                .filter(WatchFace::isEnabled)
                 .collect(Collectors.toList());
+        if (isAnonymous)
+            return enabledWatchFaces
+                    .stream()
+                    .map(WatchFaceDTO::new)
+                    .collect(Collectors.toList());
+        else {
+            JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return enabledWatchFaces
+                    .stream()
+                    .map(watchFace -> new WatchFaceDTO(
+                            watchFace,
+                            checkLike(jwtUser.getId(), watchFace.getId()),
+                            checkFavorite(jwtUser.getId(), watchFace.getId())))
+                    .collect(Collectors.toList());
+        }
     }
 
     public List<WatchFaceDTO> getFiftyLikedWatchFaces(int offsetId) {
@@ -144,11 +177,11 @@ public class WatchFaceService {
                 .collect(Collectors.toList());
     }
 
-    protected boolean checkFavorite(int userId, int wfId) {
+    private boolean checkFavorite(int userId, int wfId) {
         return watchFaceRepository.checkFavorite(userId, wfId);
     }
 
-    protected boolean checkLike(int userId, int wfId) {
+    private boolean checkLike(int userId, int wfId) {
         return watchFaceRepository.checkLike(userId, wfId);
     }
 }
