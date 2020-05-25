@@ -6,7 +6,6 @@ import fitwf.dto.WatchFaceDTO;
 import fitwf.log.Level;
 import fitwf.log.annotation.Log;
 import fitwf.response.Response;
-import fitwf.security.RoleName;
 import fitwf.security.jwt.JwtProvider;
 import fitwf.service.UserService;
 import fitwf.service.WatchFaceService;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +34,6 @@ public class PublicController {
         this.jwtProvider = jwtProvider;
         this.watchFaceService = watchFaceService;
         this.userService = userService;
-    }
-
-    @GetMapping("/test")
-    public boolean test() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_USER.name()));
     }
 
     @Log(Level.INFO)
