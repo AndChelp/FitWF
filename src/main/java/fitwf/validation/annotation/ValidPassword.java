@@ -1,5 +1,6 @@
 package fitwf.validation.annotation;
 
+import fitwf.validation.PasswordValidation;
 import fitwf.validation.UsernameValidation;
 
 import javax.validation.Constraint;
@@ -11,7 +12,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UsernameValidation.class)
+@Constraint(validatedBy = PasswordValidation.class)
 public @interface ValidPassword {
     String message() default "Password should be valid";
 

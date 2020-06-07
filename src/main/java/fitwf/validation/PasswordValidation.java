@@ -1,15 +1,16 @@
 package fitwf.validation;
 
+import fitwf.validation.annotation.ValidPassword;
 import fitwf.validation.annotation.ValidUsername;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
-public class PasswordValidation implements ConstraintValidator<ValidUsername, String> {
+public class PasswordValidation implements ConstraintValidator<ValidPassword, String> {
 
     @Override
-    public void initialize(ValidUsername constraintAnnotation) {
+    public void initialize(ValidPassword constraintAnnotation) {
     }
 
     @Override
