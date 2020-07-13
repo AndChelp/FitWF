@@ -47,10 +47,11 @@ public class UserController {
                                                 @RequestParam("gif") MultipartFile watchFaceGif) throws IOException, NoSuchAlgorithmException {
         watchFaceService.addNewWatchFace(watchFaceBin, watchFaceGif);
         return ResponseEntity.ok(Response.builder()
+                .statusMsg("WatchFace successfully uploaded")
                 .build());
     }
 
-    @GetMapping("/watchfaces/liked")
+    @GetMapping("/watchfaces/like")
     public ResponseEntity<Response> getLikedWFs(@RequestParam int offsetId) {
         List<WatchFaceDTO> watchFaceSet = watchFaceService.getFiftyLikedWatchFaces(offsetId);
 
@@ -60,7 +61,7 @@ public class UserController {
                 .build());
     }
 
-    @GetMapping("/watchfaces/favorited")
+    @GetMapping("/watchfaces/favorite")
     public ResponseEntity<Response> getFavoritedWFs(@RequestParam int offsetId) {
         List<WatchFaceDTO> watchFaceSet = watchFaceService.getFiftyFavoritedWatchFaces(offsetId);
         return ResponseEntity.ok(Response.builder()
@@ -82,7 +83,6 @@ public class UserController {
         return ResponseEntity.ok(Response.builder()
                 .build());
     }
-
 
 }
 

@@ -109,25 +109,27 @@ public class WatchFaceService {
 
     public List<WatchFaceDTO> getFiftyWatchFaces(int offsetId) {
         //TODO: удален диапазон -> возвращает один и тот же список несколько раз подряд
-        boolean isAnonymous = !SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_USER.name()));
         int lastId = watchFaceRepository.getLastId();
-        if (lastId == offsetId - 1)
+        if (lastId < offsetId + 1)
             throw new WatchFaceNotFoundException("There no more WatchFaces");
         List<WatchFace> watchFaceList = watchFaceRepository
                 .getFirst3ByIdLessThanEqualAndEnabledTrueOrderByIdDesc(lastId - offsetId);
         if (watchFaceList.isEmpty())
             throw new WatchFaceNotFoundException("There no more WatchFaces");
-        List<WatchFace> enabledWatchFaces = watchFaceList.stream()
-                .filter(WatchFace::isEnabled)
-                .collect(Collectors.toList());
-        if (isAnonymous)
-            return enabledWatchFaces
+
+        if (!SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .contains(
+                        new SimpleGrantedAuthority(
+                                RoleName.ROLE_USER.name())))
+            return watchFaceList
                     .stream()
                     .map(WatchFaceDTO::new)
                     .collect(Collectors.toList());
         else {
             JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return enabledWatchFaces
+            return watchFaceList
                     .stream()
                     .map(watchFace -> new WatchFaceDTO(
                             watchFace,

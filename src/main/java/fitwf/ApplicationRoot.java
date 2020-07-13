@@ -21,8 +21,8 @@ public class ApplicationRoot implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/api/public/files/*.bin")
-                .addResourceLocations("file://" + binUploadPath + "/");
+                .addResourceLocations("file:///" + binUploadPath);
         registry.addResourceHandler("/api/public/files/*.gif")
-                .addResourceLocations("file://" + gifUploadPath + "/");
+                .addResourceLocations("file:///" + gifUploadPath);
     }
 }
