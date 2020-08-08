@@ -5,6 +5,15 @@ time:
     am/pm
     date
     day of week
+status:
+    bluetooth
+    alarm
+    lock
+    don't disturbed
+battery:
+    icon set
+    percent
+    progress scale
 activity:
     distance
     step progress
@@ -17,14 +26,6 @@ weather:
     current temperature
     daily temperature
     air pollution
-status:
-    bluetooth
-    alarm
-    lock
-    don't disturbed
-battery:
-    percent
-    progress scale
 
 
 
